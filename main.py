@@ -54,38 +54,49 @@ response = requests.get(url, headers={
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
     })
 
-def scrape_page(url):
+class JobScraper() : 
+    def scrape_page(self,url):
+
+        soup = BeautifulSoup(response.content, "html.parser",)
+
+        jobs= soup.find("table", id="jobsboard").find_all("tr", class_="job")
     
+        for job in jobs:
+            job_details = job.find("td", class_="company")
+            title = job_details.h2
+            new_url = job_details.a["href"]
+            company = job_details.span.h3
+            #alary = job.find("td", class_="company")
+            #positon = 
+            regions = job_details.find_all("div", class_="location")
+            region_list = []
+            #print(regions)
 
-    soup = BeautifulSoup(response.content, "html.parser",)
+            for region in regions:
+                region_list.append(region.text)
+                #print(region.text)
+                
+            print("\n================================")
+            print(region_list)
+            #print("\n================================")
 
-    #jobs = soup.find(id="jobsboard").find_all('tr')
-    jobs= soup.find("table", id="jobsboard").find_all("tr", class_="job")
-   
-    for job in jobs:
-        job_details = job.find("td", class_="company")
-        title = job.find("td", class_="company").h2.text
-        url = job.find("td", class_="company").a["href"]
-        print(url)
+            job_data = {
+                "title" : title.text,
+                "company" : company.text,
+                # "position" : position.text,
+                 "region" : region_list,
+                "url" : f"https://remoteok.com/remote-jobs/{new_url}",
+            }
 
-        job_data = {
-            "title" : title,
-            # "company" : company.text,
-            # "position" : position.text,
-            # "region" : region.text,
-             "url" : f"https://remoteok.com/remote-jobs/{url}",
-        }
+            all_jobs.append(job_data)
 
-        all_jobs.append(job_data)
-  
-    #jobs2= jobs.find_all("tbody")
-#
-
-
-    #print(jobs)
 
 if response.status_code == 200:
-    scrape_page(url)
+    scraper = JobScraper()
+    scraper.scrape_page(url)
+    # for job in all_jobs:
+    #     print("\n==================")
+    #     print("lociation", job['region'])
 else :
      print(f"Failed to retrieve the page. Status code: {response.status_code}")
         
