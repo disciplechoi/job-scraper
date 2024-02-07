@@ -66,24 +66,31 @@ class JobScraper() :
             title = job_details.h2
             new_url = job_details.a["href"]
             company = job_details.span.h3
-            #alary = job.find("td", class_="company")
-            #positon = 
             regions = job_details.find_all("div", class_="location")
             region_list = []
+            salary = ""
             #print(regions)
-
-            for region in regions:
-                region_list.append(region.text)
-                #print(region.text)
-                
-            print("\n================================")
-            print(region_list)
+            
+            if len(regions) > 1 :
+                for i in range(0, len(regions)-1):
+                    #print("regions[i]",regions[i].text)     
+                    region_list.append(regions[i].text)
+                salary = regions[len(regions)-1].text
+                 
+            else : 
+                salary = regions[0].text
+                    
+              
             #print("\n================================")
+            print(region_list)
+            print(salary)
+            print("\n================================")
 
             job_data = {
                 "title" : title.text,
                 "company" : company.text,
                 # "position" : position.text,
+                "salary" : salary,
                  "region" : region_list,
                 "url" : f"https://remoteok.com/remote-jobs/{new_url}",
             }
